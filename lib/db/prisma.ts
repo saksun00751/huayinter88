@@ -1,12 +1,6 @@
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { PrismaClient } from "@prisma/client";
 
-declare global {
-  // allow global `var` declarations
-  // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
-}
-
 function createPrismaClient() {
   const dbUrl = new URL(process.env.DATABASE_URL!);
   const adapter = new PrismaMariaDb({
@@ -15,15 +9,22 @@ function createPrismaClient() {
     user:            dbUrl.username,
     password:        dbUrl.password,
     database:        dbUrl.pathname.slice(1),
-    connectionLimit: 10,   // max connections in pool
-    minimumIdle:     2,    // keep 2 connections always warm
-    idleTimeout:     60,   // close idle connection after 60s
+    connectionLimit: 10,
+    minimumIdle:     2,
+    idleTimeout:     60,
     timezone:        "+07:00",
   });
   return new PrismaClient({ adapter });
 }
 
-export const prisma = globalThis.prisma ?? createPrismaClient();
+type PrismaClientInstance = ReturnType<typeof createPrismaClient>;
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClientInstance | undefined;
+};
+
+export const prisma: PrismaClientInstance =
+  globalForPrisma.prisma ?? createPrismaClient();
 
 // เก็บ singleton ทั้ง dev และ production เพื่อป้องกัน multiple instances
-globalThis.prisma = prisma;
+globalForPrisma.prisma = prisma;
