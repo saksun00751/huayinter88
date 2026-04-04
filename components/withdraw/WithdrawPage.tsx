@@ -32,7 +32,7 @@ function maskAccount(acc: string) {
 }
 
 function fmt(n: number) {
-  return n.toLocaleString("th-TH");
+  return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function Notes({ withdrawMin, withdrawMax, withdrawMaxDay, withdrawSumToday, withdrawRemainToday, withdrawLimitAmount }: {
@@ -184,7 +184,7 @@ export default function WithdrawPage({
       <div className="bg-white rounded-2xl border border-ap-border shadow-card px-5 py-4 mb-3">
         <p className="text-[11px] text-ap-tertiary uppercase tracking-wide font-medium mb-0.5">{tw.balance}</p>
         <p className="text-[30px] font-bold text-ap-primary tabular-nums leading-tight">
-          ฿{balance.toFixed(2)}
+          ฿{fmt(balance)}
         </p>
       </div>
 

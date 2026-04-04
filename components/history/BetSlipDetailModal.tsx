@@ -164,8 +164,22 @@ export default function BetSlipDetailModal({ slip, onClose }: Props) {
           )}
           <div className="flex justify-between items-center">
             <span className="text-[13px] text-ap-secondary">{slip.itemCount} รายการ</span>
+            <span className="text-[13px] text-ap-secondary tabular-nums">
+              ฿{slip.totalBetAmount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+          </div>
+          {slip.totalDiscountAmount > 0 && (
+            <div className="flex justify-between items-center">
+              <span className="text-[13px] text-green-600">ส่วนลด</span>
+              <span className="text-[13px] font-semibold text-green-600 tabular-nums">
+                -฿{slip.totalDiscountAmount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+          )}
+          <div className="flex justify-between items-center">
+            <span className="text-[13px] font-bold text-ap-primary">ยอดสุทธิ</span>
             <span className="text-[15px] font-bold text-ap-primary tabular-nums">
-              ยอดแทง ฿{slip.totalAmount.toLocaleString("th-TH")}
+              ฿{slip.totalNetAmount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
           {status === "won" && totalWin > 0 ? (

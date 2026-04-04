@@ -18,8 +18,11 @@ export interface Ticket {
   market_icon: string;
   group_name:  string;
   status:      string;
-  total_amount: number;
-  created_at:  string;
+  total_amount:          number;
+  total_bet_amount:      number;
+  total_discount_amount: number;
+  total_net_amount:      number;
+  created_at:            string;
 }
 
 interface TicketsResponse {

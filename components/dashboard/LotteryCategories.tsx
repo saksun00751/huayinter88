@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { mapMarketsToCategories } from "@/lib/api/lotto";
 import type { MarketsLatestResponse } from "@/lib/api/lotto";
 import type { Category, SubItem } from "@/lib/categories";
 import { useTranslation } from "@/lib/i18n/useTranslation";
+import { useLang } from "@/lib/i18n/context";
+import PackageModalButton from "@/components/bet/PackageModalButton";
 
 function StatusBadge({ status, t }: { status: SubItem["drawStatus"]; t: ReturnType<typeof useTranslation<"dashboard">> }) {
   if (status === "open")
@@ -13,12 +14,13 @@ function StatusBadge({ status, t }: { status: SubItem["drawStatus"]; t: ReturnTy
   if (status === "closed")
     return <span className="inline-block rounded-full px-3 py-0.5 text-[11px] font-bold bg-gray-300 text-gray-600">{t.statusClosing}</span>;
   if (status === "resulted")
-    return <span className="inline-block rounded-full px-3 py-0.5 text-[11px] font-bold bg-gray-300 text-gray-600">{t.statusPaid}</span>;
+    return <span className="inline-block rounded-full px-3 py-0.5 text-[11px] font-bold bg-red-100 text-red-600">{t.statusPaid}</span>;
   return <span className="inline-block rounded-full px-3 py-0.5 text-[11px] font-bold bg-orange-400 text-white">{t.statusPending}</span>;
 }
 
 export default function LotteryCategories() {
   const t = useTranslation("dashboard");
+  const { lang } = useLang();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading]       = useState(true);
 
@@ -85,17 +87,15 @@ export default function LotteryCategories() {
 
           <div className="bg-white">
             {cat.items.map((item: SubItem) => (
-              <Link
+              <div
                 key={item.id}
-                href={item.href}
-                className="grid grid-cols-[1fr_60px_60px_90px] sm:grid-cols-[1fr_100px_72px_72px_110px] px-3 py-2.5 border-b border-ap-border last:border-0 hover:bg-ap-bg transition-colors items-center"
+                className="grid grid-cols-[1fr_60px_60px_90px] sm:grid-cols-[1fr_100px_72px_72px_110px] px-3 py-2.5 border-b border-ap-border last:border-0 items-center"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   {item.logo
                     ? <img src={item.logo} alt={item.name} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
                     : <span className="text-[18px] flex-shrink-0">{item.flag}</span>}
                   <span className="text-[12px] font-semibold text-ap-primary truncate">{item.name}</span>
-                  
                 </div>
                 <div className="hidden sm:block text-center text-[11px] text-ap-secondary tabular-nums">
                   {item.drawDate ?? "—"}
@@ -110,10 +110,19 @@ export default function LotteryCategories() {
                     ? <span className="bg-teal-500 text-white text-[13px] font-bold tabular-nums rounded-md px-2 py-0.5">{item.result.bot2}</span>
                     : <span className="text-ap-tertiary text-[12px]">—</span>}
                 </div>
-                <div className="flex justify-center">
-                  <StatusBadge status={item.drawStatus} t={t} />
+                <div className="flex justify-center px-1">
+                  {item.drawStatus === "open" && cat.groupId != null && item.drawId != null ? (
+                    <PackageModalButton
+                      groupId={cat.groupId}
+                      drawId={item.drawId}
+                      locale={lang}
+                      closeAt={item.closeAt}
+                    />
+                  ) : (
+                    <StatusBadge status={item.drawStatus} t={t} />
+                  )}
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 

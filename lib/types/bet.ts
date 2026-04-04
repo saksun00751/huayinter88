@@ -36,7 +36,10 @@ export interface BetSlipSummary {
   id: string;
   slipNo: string;
   lotteryName: string;
-  totalAmount: number;
+  totalAmount:          number;
+  totalBetAmount:       number;
+  totalDiscountAmount:  number;
+  totalNetAmount:       number;
   totalPayout: number;
   status: string;
   itemCount: number;

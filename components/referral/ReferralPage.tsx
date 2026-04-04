@@ -126,9 +126,9 @@ export default function ReferralPage({
 }: Props) {
   const t = useTranslation("referral");
   const ruleValue = rule?.display_value
-    ? `฿${Number(rule.display_value).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    ? `฿${Number(rule.display_value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
     : (rule?.bonus_price ?? 0) > 0
-      ? `฿${Number(rule?.bonus_price ?? 0).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      ? `฿${Number(rule?.bonus_price ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       : null;
 
   return (
@@ -152,15 +152,15 @@ export default function ReferralPage({
           <div className="text-[12px] text-ap-tertiary mt-0.5">{t.statFriends}</div>
         </div>
         <div className="bg-white rounded-2xl border border-ap-border shadow-card p-4 text-center">
-          <div className="text-[32px] font-bold text-ap-green tabular-nums">฿{totalEarned.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          <div className="text-[32px] font-bold text-ap-green tabular-nums">฿{totalEarned.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           <div className="text-[12px] text-ap-tertiary mt-0.5">{t.statIncome}</div>
         </div>
         <div className="bg-white rounded-2xl border border-ap-border shadow-card p-4 text-center">
-          <div className="text-[32px] font-bold text-amber-600 tabular-nums">฿{promotionBonusIncome.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          <div className="text-[32px] font-bold text-amber-600 tabular-nums">฿{promotionBonusIncome.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           <div className="text-[12px] text-ap-tertiary mt-0.5">{t.statBonusIncome}</div>
         </div>
         <div className="bg-white rounded-2xl border border-ap-border shadow-card p-4 text-center">
-          <div className="text-[32px] font-bold text-violet-600 tabular-nums">{promotionBonusCount.toLocaleString("th-TH")}</div>
+          <div className="text-[32px] font-bold text-violet-600 tabular-nums">{promotionBonusCount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           <div className="text-[12px] text-ap-tertiary mt-0.5">{t.statBonusCount}</div>
         </div>
       </div>
@@ -182,7 +182,7 @@ export default function ReferralPage({
             </div>
             <div className="rounded-xl border border-ap-border bg-ap-bg/40 p-3">
               <p className="text-[11px] text-ap-tertiary">Bonus Percent</p>
-              <p className="text-[13px] font-bold text-ap-primary mt-0.5">{Number(rule.bonus_percent ?? 0).toLocaleString("th-TH", { maximumFractionDigits: 2 })}%</p>
+              <p className="text-[13px] font-bold text-ap-primary mt-0.5">{Number(rule.bonus_percent ?? 0).toLocaleString("en-US", { maximumFractionDigits: 2 })}%</p>
             </div>
             <div className="rounded-xl border border-ap-border bg-ap-bg/40 p-3">
               <p className="text-[11px] text-ap-tertiary">Bonus Value</p>
@@ -322,14 +322,14 @@ function ReferralList({
             </div>
             <div className="bg-white rounded-xl p-2.5 text-center border border-ap-border">
               <p className="text-[16px] font-bold text-ap-green tabular-nums">
-                ฿{totalEarned.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                ฿{totalEarned.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
               <p className="text-[10px] text-ap-tertiary">{t.bonusTotal}</p>
             </div>
             <div className="bg-white rounded-xl p-2.5 text-center border border-ap-border">
               <p className="text-[16px] font-bold text-ap-orange tabular-nums">
                 {referredCount > 0
-                  ? `฿${(totalEarned / referredCount).toLocaleString("th-TH", { maximumFractionDigits: 2 })}`
+                  ? `฿${(totalEarned / referredCount).toLocaleString("en-US", { maximumFractionDigits: 2 })}`
                   : "—"}
               </p>
               <p className="text-[10px] text-ap-tertiary">{t.avgPerPerson}</p>
@@ -424,7 +424,7 @@ function ReferralList({
                   {/* Bonus */}
                   <div className="text-right flex-shrink-0">
                     <p className={`text-[14px] font-bold tabular-nums ${earned > 0 ? "text-ap-green" : "text-ap-tertiary"}`}>
-                      ฿{earned.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                      ฿{earned.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                     <p className="text-[10px] text-ap-tertiary">{tier.rate}{t.perBet}</p>
                   </div>
@@ -437,7 +437,7 @@ function ReferralList({
           <div className="px-5 py-3.5 border-t border-ap-border bg-ap-bg/40 flex items-center justify-between">
             <span className="text-[13px] font-semibold text-ap-secondary">{t.footerTotal}</span>
             <span className="text-[16px] font-bold text-ap-green tabular-nums">
-              ฿{totalEarned.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+              ฿{totalEarned.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
         </>

@@ -53,7 +53,7 @@ export default function BalanceCard({ phone, displayName }: Props) {
     setTimeout(() => setSpinning(false), 800);
   }
 
-  const fmt = (n: number) => n.toFixed(2);
+  const fmt = (n: number) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <div className="bg-ap-blue rounded-3xl overflow-hidden relative">
@@ -112,7 +112,7 @@ export default function BalanceCard({ phone, displayName }: Props) {
           <span className="text-white/70 text-[11px]">{t.cashback}</span>
         </div>
         <div className="p-4 flex flex-col items-center justify-center gap-0.5">
-          <span className="text-white/70 text-[14px]">{t.referral} <span className="text-white font-bold">{loading ? "..." : (data?.downline ?? 0)}</span></span>
+          <span className="text-white/70 text-[14px]">{t.referral} <span className="text-white font-bold">{loading ? "..." : fmt(data?.downline ?? 0)}</span></span>
           <span className="text-white/70 text-[14px]">{t.thisMonth} <span className="text-white font-bold">{loading ? "..." : fmt(data?.winlost ?? 0)}</span></span>
         </div>
       </div>

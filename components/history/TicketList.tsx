@@ -85,9 +85,23 @@ export default function TicketList({ tickets, t }: { tickets: Ticket[]; t: T }) 
 
             {/* Amount */}
             <div className="text-right shrink-0">
-              <p className="text-[15px] font-bold text-ap-primary tabular-nums">
-                ฿{ticket.total_amount.toLocaleString("th-TH")}
-              </p>
+              {ticket.total_discount_amount > 0 ? (
+                <>
+                  <p className="text-[12px] text-ap-tertiary tabular-nums line-through">
+                    ฿{Number(ticket.total_bet_amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                  <p className="text-[11px] text-green-600 tabular-nums">
+                    -฿{Number(ticket.total_discount_amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                  <p className="text-[15px] font-bold text-ap-primary tabular-nums">
+                    ฿{Number(ticket.total_net_amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                </>
+              ) : (
+                <p className="text-[15px] font-bold text-ap-primary tabular-nums">
+                  ฿{Number(ticket.total_net_amount || ticket.total_amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
+              )}
               <p className="text-[11px] text-ap-tertiary">#{ticket.id}</p>
             </div>
             <div className="shrink-0 ml-1">

@@ -13,8 +13,11 @@ interface TicketDetailResponse {
     draw_date: string;
     market_name: string;
     status: string;
-    total_amount: number;
-    total_win_amount?: number;
+    total_amount:          number;
+    total_bet_amount?:     number;
+    total_discount_amount?: number;
+    total_net_amount?:     number;
+    total_win_amount?:     number;
     item_count?: number;
     created_at: string;
     items: Array<{
@@ -66,11 +69,18 @@ export async function fetchSlipDetail(slipId: string): Promise<BetSlipDetail | n
 
   const totalPayout = items.reduce((sum, item) => sum + item.payout, 0);
 
+  const totalBetAmount      = Number(ticket.total_bet_amount      ?? ticket.total_amount ?? 0);
+  const totalDiscountAmount = Number(ticket.total_discount_amount ?? 0);
+  const totalNetAmount      = Number(ticket.total_net_amount      ?? ticket.total_amount ?? 0);
+
   return {
     id: String(ticket.id),
     slipNo: String(ticket.id),
     lotteryName: ticket.market_name,
-    totalAmount: Number(ticket.total_amount ?? 0),
+    totalAmount:         Number(ticket.total_amount ?? 0),
+    totalBetAmount,
+    totalDiscountAmount,
+    totalNetAmount,
     totalPayout,
     status: ticket.status ?? "pending",
     itemCount: Number(ticket.item_count ?? items.length),

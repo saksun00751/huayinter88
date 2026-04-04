@@ -158,7 +158,7 @@ function BankCard({
             {account.acc_no}
           </p>
           {minAmt > 0 && (
-            <span className="text-[10px] text-ap-tertiary">ขั้นต่ำ ฿{minAmt.toLocaleString("th-TH")}</span>
+            <span className="text-[10px] text-ap-tertiary">ขั้นต่ำ ฿{minAmt.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           )}
         </div>
       </div>
@@ -308,7 +308,7 @@ export default function DepositPage({ displayName, bankName, bankAccount, balanc
       <div className="bg-white rounded-2xl border border-ap-border shadow-card px-5 py-4 mb-3">
         <p className="text-[11px] text-ap-tertiary uppercase tracking-wide font-medium mb-0.5">ยอดคงเหลือ</p>
         <p className="text-[30px] font-bold text-ap-primary tabular-nums leading-tight">
-          ฿{balance.toFixed(2)}
+          ฿{balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </p>
       </div>
 

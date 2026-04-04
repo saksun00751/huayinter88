@@ -46,7 +46,15 @@ function Empty({ label, suffix }: { label: string; suffix: string }) {
   );
 }
 
-function TxCard({ tx, t }: { tx: TxRow; t: TT }) {
+function formatNumber(value: number, locale: string): string {
+  const numberLocale = locale === "th" ? "th-TH" : "en-US";
+  return value.toLocaleString(numberLocale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+function TxCard({ tx, t, locale }: { tx: TxRow; t: TT; locale: string }) {
   const isPositive = tx.amountRaw >= 0;
   return (
     <div className="flex items-center justify-between px-4 py-3.5 border-b border-ap-border last:border-0">
@@ -57,10 +65,10 @@ function TxCard({ tx, t }: { tx: TxRow; t: TT }) {
       </div>
       <div className="text-right flex-shrink-0 pl-4">
         <p className={`text-[16px] font-bold tabular-nums ${isPositive ? "text-emerald-500" : "text-red-500"}`}>
-          {isPositive ? "+" : ""}{tx.amountRaw.toFixed(2)}
+          {isPositive ? "+" : ""}{formatNumber(tx.amountRaw, locale)}
         </p>
         {tx.balanceAfter > 0 && (
-          <p className="text-[11px] text-ap-tertiary tabular-nums">{t.balanceAfter} {tx.balanceAfter.toFixed(2)}</p>
+          <p className="text-[11px] text-ap-tertiary tabular-nums">{t.balanceAfter} {formatNumber(tx.balanceAfter, locale)}</p>
         )}
       </div>
     </div>
@@ -248,7 +256,7 @@ export default function TransactionsPageClient({ locale, apiBase }: { locale: st
 
           {!loading && !error && (rows.length === 0
             ? <Empty label={`${t.emptyPrefix}${TAB_LABELS[tabId]}`} suffix={t.emptySuffix} />
-            : pageRows.map((tx) => <TxCard key={`${tx.id}-${tx.date}`} tx={tx} t={t} />)
+            : pageRows.map((tx) => <TxCard key={`${tx.id}-${tx.date}`} tx={tx} t={t} locale={locale} />)
           )}
 
           {!loading && !error && rows.length > PAGE_SIZE && (
