@@ -81,11 +81,17 @@ export function permutations(str: string): string[] {
 }
 
 export function nineteenDoor(num: string): string[] {
-  // รับ 1 หลัก: สร้างทุกเลข 2 หลักที่มีตัวเลขนั้นอยู่ในตำแหน่งใดก็ได้
-  const d = num.length === 1 ? num[0] : num[0];
-  const set = new Set<string>();
-  for (let i = 0; i <= 9; i++) { set.add(d + String(i)); set.add(String(i) + d); }
-  return [...set].sort();
+  // รับ 1 หลัก: สร้าง 19 ตัว โดยเริ่มจากเลขเบิ้ล แล้วเรียงแบบ 01 10, 02 20, ...
+  const d = num[0] ?? "";
+  if (!d) return [];
+
+  const values: string[] = [d + d];
+  for (let i = 0; i <= 9; i++) {
+    const digit = String(i);
+    if (digit === d) continue;
+    values.push(d + digit, digit + d);
+  }
+  return values;
 }
 
 export function addUnique(current: string[], next: string[]): string[] {

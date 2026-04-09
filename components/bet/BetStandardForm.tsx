@@ -1,11 +1,11 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Toast from "@/components/ui/Toast";
 import { useLang } from "@/lib/i18n/context";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import {
   BetTypeId, BillRow, MAX_DIGITS, DOUBLED, TRIPLED,
-  genId, genSlipNo, addUnique, permutations, isValid3Perm, isValid6Perm,
+  genId, genSlipNo, addUnique, permutations, nineteenDoor, isValid3Perm, isValid6Perm,
 } from "./types";
 import type { NumberLimitRow, BettingContext } from "@/lib/types/bet";
 
@@ -102,6 +102,7 @@ export default function BetStandardForm({ betType, baseBetType, selected3, selec
   const [topAmt,     setTopAmt]     = useState("");
   const [botAmt,     setBotAmt]     = useState("");
   const [toastMsg,   setToastMsg]   = useState<{ text: string; type: "warning" | "error" } | null>(null);
+  const pendingAddRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (tripleTrigger && tripleTrigger > 0) {
@@ -119,11 +120,24 @@ export default function BetStandardForm({ betType, baseBetType, selected3, selec
 
   // reset เมื่อเปลี่ยน betType
   useEffect(() => {
+    if (pendingAddRef.current) {
+      clearTimeout(pendingAddRef.current);
+      pendingAddRef.current = null;
+    }
     setPreview([]);
     setInputBuf("");
     setTopAmt("");
     setBotAmt("");
   }, [betType]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingAddRef.current) {
+        clearTimeout(pendingAddRef.current);
+        pendingAddRef.current = null;
+      }
+    };
+  }, []);
 
   type Ctx = typeof topCtx;
   const validateAmount = (amt: number, ctx: Ctx): string | null => {
@@ -139,11 +153,31 @@ export default function BetStandardForm({ betType, baseBetType, selected3, selec
 
   // ── Numpad handlers ─────────────────────────────────────────────────────────
   const pressDigit = (d: string) => {
+    if (pendingAddRef.current) return;
+
     const next = inputBuf + d;
     if (next.length > maxDigits) return;
     setInputBuf(next);
 
     if (next.length === maxDigits) {
+      if (betType === "19door") {
+        pendingAddRef.current = setTimeout(() => {
+          const expanded = nineteenDoor(next);
+          const blocked = expanded.filter((n) => isBlocked(n, topBillType, numberLimits));
+          const allowed = expanded.filter((n) => !isBlocked(n, topBillType, numberLimits));
+
+          if (blocked.length > 0) {
+            setToastMsg({ text: `🔒 ${t.numberLabel} ${blocked.join(", ")} ${t.blockedNumberMessage}`, type: "error" });
+          }
+          if (allowed.length > 0) {
+            setPreview((prev) => addUnique(prev, allowed));
+          }
+          setInputBuf("");
+          pendingAddRef.current = null;
+        }, 500);
+        return;
+      }
+
       // expand ตาม special mode
       let expanded: string[];
       if (betType === "2perm") {
@@ -163,6 +197,8 @@ export default function BetStandardForm({ betType, baseBetType, selected3, selec
           return;
         }
         expanded = permutations(next);
+      } else if (betType === "19door") {
+        expanded = nineteenDoor(next);
       } else {
         expanded = [next];
       }
@@ -180,8 +216,20 @@ export default function BetStandardForm({ betType, baseBetType, selected3, selec
     }
   };
 
-  const pressBackspace = () => setInputBuf((prev) => prev.slice(0, -1));
-  const pressClear = () => setInputBuf("");
+  const pressBackspace = () => {
+    if (pendingAddRef.current) {
+      clearTimeout(pendingAddRef.current);
+      pendingAddRef.current = null;
+    }
+    setInputBuf((prev) => prev.slice(0, -1));
+  };
+  const pressClear = () => {
+    if (pendingAddRef.current) {
+      clearTimeout(pendingAddRef.current);
+      pendingAddRef.current = null;
+    }
+    setInputBuf("");
+  };
   const removePreview = (idx: number) => setPreview((prev) => prev.filter((_, i) => i !== idx));
 
   // ── Add bill ────────────────────────────────────────────────────────────────

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Toast from "@/components/ui/Toast";
 import BetClassicForm  from "./BetClassicForm";
 import BetStandardForm from "./BetStandardForm";
@@ -160,6 +160,7 @@ export default function BetQuickForm({
   const [botAmt,      setBotAmt]      = useState("");
   const [note,        setNote]        = useState("");
   const [slipText,    setSlipText]    = useState("");
+  const pendingAddRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (tripleTrigger && tripleTrigger > 0) {
@@ -214,6 +215,17 @@ export default function BetQuickForm({
       setSlipText(inProgress);
       return;
     }
+    if (betType === "19door") {
+      const expanded = valid.flatMap((n) => nineteenDoor(n));
+      const blockedNums = expanded.filter((n) => isBlocked(n, topBillType, numberLimits));
+      const allowedNums = expanded.filter((n) => !isBlocked(n, topBillType, numberLimits));
+      if (blockedNums.length > 0)
+        setToastMsg({ text: `🔒 ${t.numberLabel} ${blockedNums.join(", ")} ${t.blockedNumberMessage}`, type: "error" });
+      if (allowedNums.length > 0)
+        setPreview((prev) => addUnique(prev, allowedNums));
+      setSlipText(inProgress);
+      return;
+    }
     if (valid.length > 0) {
       const blockedNums = valid.filter((n) => isBlocked(n, topBillType, numberLimits));
       const allowedNums = valid.filter((n) => !isBlocked(n, topBillType, numberLimits));
@@ -239,6 +251,8 @@ export default function BetQuickForm({
   }
 
   const handleNumberInput = (val: string) => {
+    if (pendingAddRef.current) return;
+
     const digits = val.replace(/\D/g, "").slice(0, maxDigits);
     setInputBuf(digits);
     if (digits.length === maxDigits) {
@@ -254,29 +268,44 @@ export default function BetQuickForm({
       }
 
       const expanded = expandNumber(digits);
+      const commitExpanded = () => {
+        const blockedNums = expanded.filter((n) => isBlocked(n, topBillType, numberLimits));
+        const allowedNums = expanded.filter((n) => !isBlocked(n, topBillType, numberLimits));
+        const dups = allowedNums.filter((n) => preview.includes(n));
 
-      const blockedNums = expanded.filter((n) => isBlocked(n, topBillType, numberLimits));
-      const allowedNums = expanded.filter((n) => !isBlocked(n, topBillType, numberLimits));
-      const dups = allowedNums.filter((n) => preview.includes(n));
+        if (blockedNums.length > 0) {
+          setToastMsg({ text: `🔒 ${t.numberLabel} ${blockedNums.join(", ")} ${t.blockedNumberMessage}`, type: "error" });
+        } else if (dups.length > 0) {
+          setDupWarning(`${t.numberLabel} ${dups.join(", ")} ${t.duplicatePreviewMessage}`);
+          setTimeout(() => setDupWarning(""), 2500);
+        } else {
+          setDupWarning("");
+        }
 
-      if (blockedNums.length > 0) {
-        setToastMsg({ text: `🔒 ${t.numberLabel} ${blockedNums.join(", ")} ${t.blockedNumberMessage}`, type: "error" });
-      } else if (dups.length > 0) {
-        setDupWarning(`${t.numberLabel} ${dups.join(", ")} ${t.duplicatePreviewMessage}`);
-        setTimeout(() => setDupWarning(""), 2500);
-      } else {
-        setDupWarning("");
+        if (allowedNums.length > 0)
+          setPreview((prev) => addUnique(prev, allowedNums));
+        setInputBuf("");
+      };
+
+      if (betType === "19door") {
+        pendingAddRef.current = setTimeout(() => {
+          commitExpanded();
+          pendingAddRef.current = null;
+        }, 500);
+        return;
       }
 
-      if (allowedNums.length > 0)
-        setPreview((prev) => addUnique(prev, allowedNums));
-      setInputBuf("");
+      commitExpanded();
     }
   };
 
   const resetKey = baseBetType ?? betType;
 
   useEffect(() => {
+    if (pendingAddRef.current) {
+      clearTimeout(pendingAddRef.current);
+      pendingAddRef.current = null;
+    }
     setPreview([]);
     setInputBuf("");
     setSlipText("");
@@ -284,6 +313,15 @@ export default function BetQuickForm({
     setTopAmt("");
     setBotAmt("");
   }, [resetKey]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingAddRef.current) {
+        clearTimeout(pendingAddRef.current);
+        pendingAddRef.current = null;
+      }
+    };
+  }, []);
 
   const clearPreview = useCallback(() => {
     setPreview([]);
