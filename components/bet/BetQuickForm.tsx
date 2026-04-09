@@ -222,7 +222,7 @@ export default function BetQuickForm({
       if (blockedNums.length > 0)
         setToastMsg({ text: `🔒 ${t.numberLabel} ${blockedNums.join(", ")} ${t.blockedNumberMessage}`, type: "error" });
       if (allowedNums.length > 0)
-        setPreview((prev) => [...prev, ...allowedNums]);
+        setPreview((prev) => addUnique(prev, allowedNums));
       setSlipText(inProgress);
       return;
     }
@@ -283,7 +283,7 @@ export default function BetQuickForm({
         }
 
         if (allowedNums.length > 0)
-          setPreview((prev) => betType === "19door" ? [...prev, ...allowedNums] : addUnique(prev, allowedNums));
+          setPreview((prev) => addUnique(prev, allowedNums));
         setInputBuf("");
       };
 
@@ -551,13 +551,7 @@ export default function BetQuickForm({
             )}
           </div>
           {preview.length > 0 && (
-            <div className="px-3 pb-3 flex justify-center gap-2">
-              {betType === "19door" && (
-                <button onClick={() => setPreview((prev) => [...new Set(prev)])}
-                  className="text-[12px] font-bold px-4 py-1.5 rounded-lg bg-ap-blue/10 border border-ap-blue/30 text-ap-blue hover:bg-ap-blue hover:text-white active:scale-95 transition-all">
-                  {t.removeDuplicates}
-                </button>
-              )}
+            <div className="px-3 pb-3 flex justify-center">
               <button onClick={() => { setPreview([]); setInputBuf(""); setDupWarning(""); }}
                 className="text-[12px] font-bold px-4 py-1.5 rounded-lg bg-ap-red/10 border border-ap-red/30 text-ap-red hover:bg-ap-red hover:text-white active:scale-95 transition-all">
                 ✕ {t.clearAll}

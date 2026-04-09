@@ -170,7 +170,7 @@ export default function BetStandardForm({ betType, baseBetType, selected3, selec
             setToastMsg({ text: `🔒 ${t.numberLabel} ${blocked.join(", ")} ${t.blockedNumberMessage}`, type: "error" });
           }
           if (allowed.length > 0) {
-            setPreview((prev) => [...prev, ...allowed]);
+            setPreview((prev) => addUnique(prev, allowed));
           }
           setInputBuf("");
           pendingAddRef.current = null;
@@ -366,8 +366,14 @@ export default function BetStandardForm({ betType, baseBetType, selected3, selec
               <span className="text-[13px] font-bold text-ap-primary uppercase tracking-wide">{t.previewTitle}</span>
               <span className="text-[13px] font-bold text-ap-blue tabular-nums">{preview.length} {t.countUnit}</span>
             </div>
-            <div className="flex items-center gap-1.5">
-            </div>
+            {preview.length > 0 && (
+              <button
+                onClick={() => setPreview([])}
+                className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-ap-red/10 border border-ap-red/30 text-ap-red hover:bg-ap-red hover:text-white active:scale-95 transition-all"
+              >
+                ✕ {t.clearAll}
+              </button>
+            )}
           </div>
           <div className="p-3 min-h-[52px] flex flex-wrap gap-1.5">
             {preview.length === 0 ? (
@@ -389,20 +395,6 @@ export default function BetStandardForm({ betType, baseBetType, selected3, selec
               ))
             )}
           </div>
-          {preview.length > 0 && (
-            <div className="px-3 pb-3 flex justify-center gap-2">
-              {betType === "19door" && (
-                <button onClick={() => setPreview((prev) => [...new Set(prev)])}
-                  className="text-[12px] font-bold px-4 py-1.5 rounded-lg bg-ap-blue/10 border border-ap-blue/30 text-ap-blue hover:bg-ap-blue hover:text-white active:scale-95 transition-all">
-                  {t.removeDuplicates}
-                </button>
-              )}
-              <button onClick={() => setPreview([])}
-                className="text-[12px] font-bold px-4 py-1.5 rounded-lg bg-ap-red/10 border border-ap-red/30 text-ap-red hover:bg-ap-red hover:text-white active:scale-95 transition-all">
-                ✕ {t.clearAll}
-              </button>
-            </div>
-          )}
         </div>
 
         {/* ── Amount inputs ──────────────────────────────────────────────── */}
