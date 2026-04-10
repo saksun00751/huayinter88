@@ -178,39 +178,44 @@ export default function BetStandardForm({ betType, baseBetType, selected3, selec
         return;
       }
 
-      // expand ตาม special mode
-      let expanded: string[];
-      if (betType === "2perm") {
-        const rev = next.split("").reverse().join("");
-        expanded = rev === next ? [next] : [next, rev];
-      } else if (betType === "3perm") {
-        if (!isValid3Perm(next)) {
-          setToastMsg({ text: `⚠️ ${next} ${t.not3permMessage}`, type: "error" });
-          setInputBuf("");
-          return;
+      pendingAddRef.current = setTimeout(() => {
+        // expand ตาม special mode
+        let expanded: string[];
+        if (betType === "2perm") {
+          const rev = next.split("").reverse().join("");
+          expanded = rev === next ? [next] : [next, rev];
+        } else if (betType === "3perm") {
+          if (!isValid3Perm(next)) {
+            setToastMsg({ text: `⚠️ ${next} ${t.not3permMessage}`, type: "error" });
+            setInputBuf("");
+            pendingAddRef.current = null;
+            return;
+          }
+          expanded = permutations(next);
+        } else if (betType === "6perm") {
+          if (!isValid6Perm(next)) {
+            setToastMsg({ text: `⚠️ ${next} ${t.not6permMessage}`, type: "error" });
+            setInputBuf("");
+            pendingAddRef.current = null;
+            return;
+          }
+          expanded = permutations(next);
+        } else {
+          expanded = [next];
         }
-        expanded = permutations(next);
-      } else if (betType === "6perm") {
-        if (!isValid6Perm(next)) {
-          setToastMsg({ text: `⚠️ ${next} ${t.not6permMessage}`, type: "error" });
-          setInputBuf("");
-          return;
+
+        const blocked = expanded.filter((n) => isBlocked(n, topBillType, numberLimits));
+        const allowed = expanded.filter((n) => !isBlocked(n, topBillType, numberLimits));
+
+        if (blocked.length > 0) {
+          setToastMsg({ text: `🔒 ${t.numberLabel} ${blocked.join(", ")} ${t.blockedNumberMessage}`, type: "error" });
         }
-        expanded = permutations(next);
-      } else {
-        expanded = [next];
-      }
-
-      const blocked = expanded.filter((n) => isBlocked(n, topBillType, numberLimits));
-      const allowed = expanded.filter((n) => !isBlocked(n, topBillType, numberLimits));
-
-      if (blocked.length > 0) {
-        setToastMsg({ text: `🔒 ${t.numberLabel} ${blocked.join(", ")} ${t.blockedNumberMessage}`, type: "error" });
-      }
-      if (allowed.length > 0) {
-        setPreview((prev) => addUnique(prev, allowed));
-      }
-      setInputBuf("");
+        if (allowed.length > 0) {
+          setPreview((prev) => addUnique(prev, allowed));
+        }
+        setInputBuf("");
+        pendingAddRef.current = null;
+      }, 500);
     }
   };
 
