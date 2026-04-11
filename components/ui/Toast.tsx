@@ -33,14 +33,14 @@ export default function Toast({ message, type = "error", durationMs = 3500, onCl
   return createPortal(
     <div className="fixed top-5 left-1/2 z-[999] -translate-x-1/2 pointer-events-none">
       <div className={[
-        "flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-card-xl min-w-[280px] max-w-[90vw] transition-all duration-300",
+        "flex items-center gap-3 px-6 py-4 rounded-2xl shadow-card-xl min-w-[320px] max-w-[92vw] transition-all duration-300",
         styles[type],
         visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3",
       ].join(" ")}>
-        <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[13px] font-black shrink-0">
+        <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-[15px] font-black shrink-0">
           {icons[type]}
         </span>
-        <p className="text-[14px] font-semibold leading-snug">{message}</p>
+        <p className="text-[16px] font-semibold leading-snug">{message}</p>
       </div>
     </div>,
     document.body
