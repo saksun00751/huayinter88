@@ -219,7 +219,6 @@ export default function RegisterForm({ defaultRef = "", banks = [] }: { defaultR
   const [lastname, setLastname]         = useState("");
   const [bankCode, setBankCode]         = useState<number | null>(null);
   const [accNo, setAccNo]               = useState("");
-  const [accName, setAccName]           = useState("");
   const [accNameLoading, setAccNameLoading] = useState(false);
   const [accNameError, setAccNameError] = useState("");
   const [toastMsg, setToastMsg]         = useState("");
@@ -256,12 +255,14 @@ export default function RegisterForm({ defaultRef = "", banks = [] }: { defaultR
 
   useEffect(() => {
     if (toastMsg || toastQueue.length === 0) return;
-    setToastMsg(toastQueue[0]);
-    setToastQueue((prev) => prev.slice(1));
+    const [next, ...rest] = toastQueue;
+    if (next) {
+      setToastMsg(next);
+      setToastQueue(rest);
+    }
   }, [toastMsg, toastQueue]);
 
   useEffect(() => {
-    setAccName("");
     setAccNameError("");
     if (bankCode == null || bankCode === 18 || accNo.length < 10) {
       setAccNameLoading(false);
@@ -286,8 +287,7 @@ export default function RegisterForm({ defaultRef = "", banks = [] }: { defaultR
         }>("/auth/register/bank-account-name", { bank: bankCode, acc_no: accNo }, undefined, lang);
         if (cancelled) return;
         const d = res.data;
-        if (d?.account_name) {
-          setAccName(d.account_name);
+        if (d?.firstname || d?.lastname) {
           setFirstname(d.firstname ?? "");
           setLastname(d.lastname ?? "");
         } else {
@@ -367,9 +367,6 @@ export default function RegisterForm({ defaultRef = "", banks = [] }: { defaultR
           />
           {accNameLoading && (
             <p className="text-[12px] text-ap-tertiary">กำลังตรวจสอบชื่อบัญชี...</p>
-          )}
-          {accName && !accNameLoading && (
-            <p className="text-[12px] text-ap-green">✓ {accName}</p>
           )}
         </div>
 

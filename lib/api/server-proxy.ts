@@ -1,4 +1,12 @@
-const API_BASE = process.env.API_BASE_URL ?? "http://api.huayinter88.com/api/v1";
+function resolveApiBase(): string {
+  const url = process.env.API_BASE_URL;
+  if (!url) {
+    throw new Error("API_BASE_URL environment variable is not set");
+  }
+  return url;
+}
+
+const API_BASE = resolveApiBase();
 
 export function getApiBaseUrl(): string {
   return API_BASE;
