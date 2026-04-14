@@ -3,7 +3,6 @@ import BalanceCard from "@/components/dashboard/BalanceCard";
 import { requireAuth } from "@/lib/session/auth";
 import type { Metadata } from "next";
 import PromoBanner from "@/components/ui/PromoBanner";
-import ToastTest from "@/components/dashboard/ToastTest";
 
 export const metadata: Metadata = { title: "หน้าหลัก — Lotto" };
 
@@ -17,8 +16,6 @@ export default async function DashboardPage() {
         <BalanceCard phone={user.phone} displayName={user.displayName} />
 
         <PromoBanner />
-
-        <ToastTest />
 
         {/* หวยวันนี้ — CSR */}
         <LotteryCategories />
