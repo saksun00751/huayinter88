@@ -3,6 +3,27 @@
 import { useState } from "react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 
+function getBrowserName(): string {
+  const ua = navigator.userAgent;
+  if (/CriOS/i.test(ua)) return "Chrome";
+  if (/FxiOS/i.test(ua)) return "Firefox";
+  if (/EdgiOS|Edg/i.test(ua)) return "Edge";
+  if (/OPR|Opera/i.test(ua)) return "Opera";
+  if (/Chrome/i.test(ua) && !/Edg|OPR/i.test(ua)) return "Chrome";
+  if (/Safari/i.test(ua) && !/Chrome|CriOS/i.test(ua)) return "Safari";
+  if (/Firefox/i.test(ua)) return "Firefox";
+  return "Unknown";
+}
+
+function openGameUrl(url: string) {
+  const browser = getBrowserName();
+  if (browser === "Safari") {
+    window.location.href = url;
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
 interface Game {
   id:       string;
   provider: string;
@@ -31,7 +52,7 @@ export default function GameGrid({ games, emoji, notFound }: Props) {
       });
       const data = await res.json();
       if (data.url) {
-        window.open(data.url, "_blank", "noopener,noreferrer");
+        openGameUrl(data.url);
       } else {
         alert(data.error ?? t.errCannotPlay);
       }
